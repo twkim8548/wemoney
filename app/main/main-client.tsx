@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Plus, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import ExpenseModal from '@/components/expense-modal'
+import Image from "next/image";
 
 // 지출 데이터 타입
 type Expense = {
@@ -62,7 +63,7 @@ export default function MainClient({ expenses, totalAmount, groupedExpenses, cat
   const [showYearPicker, setShowYearPicker] = useState(false)
   const [showMonthPicker, setShowMonthPicker] = useState(false)
   const router = useRouter()
-  
+
   // 현재 선택된 년도와 월
   const currentYear = parseInt(selectedMonth.split('-')[0])
   const currentMonthNum = parseInt(selectedMonth.split('-')[1])
@@ -109,7 +110,10 @@ export default function MainClient({ expenses, totalAmount, groupedExpenses, cat
       <header className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">위머니</h1>
+            <div className="flex items-center gap-2">
+              <Image src="/wemoney-logo.png" alt="logo" width={50} height={50}/>
+              <h1 className="text-2xl font-bold">위머니</h1>
+            </div>
             <div className="flex gap-2">
               <Link href="/stats">
                 <Button variant="ghost" size="sm">
@@ -249,8 +253,8 @@ export default function MainClient({ expenses, totalAmount, groupedExpenses, cat
             {/* 지출 항목들 */}
             <Card className="divide-y">
               {expenses.map((expense) => (
-                <div 
-                  key={expense.id} 
+                <div
+                  key={expense.id}
                   className="p-4 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors"
                   onClick={() => handleExpenseClick(expense)}
                 >
