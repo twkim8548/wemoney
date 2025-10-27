@@ -48,3 +48,10 @@ next-env.d.ts
 *.swp
 *.swo
 *~
+
+# PWA files (auto-generated)
+**/public/workbox-*.js
+**/public/worker-*.js
+**/public/sw.js.map
+**/public/workbox-*.js.map
+**/public/worker-*.js.map

@@ -59,14 +59,14 @@ export default function JoinWorkspace({ workspaceId, workspaceName }: Props) {
         {/* 초대 카드 */}
         <Card>
           <CardHeader>
-            <CardTitle>가계부 초대</CardTitle>
+            <CardTitle>지출 기록부 초대</CardTitle>
             <CardDescription>
               <span className="font-semibold">{workspaceName}</span>에 초대되었습니다
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-gray-600">
-              참여하면 함께 가계부를 관리할 수 있어요
+              참여하면 함께 지출을 기록할 수 있어요
             </p>
 
             {error && (

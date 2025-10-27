@@ -47,7 +47,7 @@ export default function LoginPage() {
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold text-primary">💰</h1>
         <h2 className="text-3xl font-bold">위머니</h2>
-        <p className="text-gray-600 text-sm">우리의 가계부</p>
+        <p className="text-gray-600 text-sm">우리의 지출 기록</p>
       </div>
 
       {/* 로그인 카드 */}

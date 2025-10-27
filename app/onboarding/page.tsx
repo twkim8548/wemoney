@@ -99,7 +99,7 @@ export default function OnboardingPage() {
                 <div className="text-center space-y-2">
                     <h1 className="text-4xl font-bold text-primary">💰</h1>
                     <h2 className="text-3xl font-bold">위머니</h2>
-                    <p className="text-gray-600 text-sm">우리의 가계부</p>
+                    <p className="text-gray-600 text-sm">우리의 지출 기록</p>
                 </div>
 
                 {mode === 'select' && (
@@ -112,7 +112,7 @@ export default function OnboardingPage() {
                                     </div>
                                     <div>
                                         <CardTitle className="text-lg">새로 만들기</CardTitle>
-                                        <CardDescription>새 가계부를 시작해요</CardDescription>
+                                        <CardDescription>새 지출 기록부를 시작해요</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
@@ -137,7 +137,7 @@ export default function OnboardingPage() {
                 {mode === 'create' && (
                     <Card>
                         <CardHeader>
-                            <CardTitle>새 가계부 만들기</CardTitle>
+                            <CardTitle>새 지출 기록부 만들기</CardTitle>
                             <CardDescription>나중에 상대방을 초대할 수 있어요</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
