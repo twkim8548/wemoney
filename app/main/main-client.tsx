@@ -8,9 +8,10 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Plus, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import ExpenseModal from '@/components/expense-modal'
-import Image from "next/image";
+import Image from "next/image"
+import ExpenseListSkeleton from '@/components/expense-list-skeleton'
 
 // 지출 데이터 타입
 type Expense = {
@@ -62,6 +63,7 @@ export default function MainClient({ expenses, totalAmount, groupedExpenses, cat
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null)
   const [showYearPicker, setShowYearPicker] = useState(false)
   const [showMonthPicker, setShowMonthPicker] = useState(false)
+  const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
   // 현재 선택된 년도와 월
@@ -81,20 +83,26 @@ export default function MainClient({ expenses, totalAmount, groupedExpenses, cat
     const date = new Date(selectedMonth + '-01')
     date.setMonth(date.getMonth() + delta)
     const newMonth = date.toISOString().slice(0, 7)
-    router.push(`/main?month=${newMonth}`)
+    startTransition(() => {
+      router.push(`/main?month=${newMonth}`)
+    })
   }
 
   // 년도 선택
   const selectYear = (year: number) => {
     const monthStr = currentMonthNum.toString().padStart(2, '0')
-    router.push(`/main?month=${year}-${monthStr}`)
+    startTransition(() => {
+      router.push(`/main?month=${year}-${monthStr}`)
+    })
     setShowYearPicker(false)
   }
 
   // 월 선택
   const selectMonth = (month: number) => {
     const monthStr = month.toString().padStart(2, '0')
-    router.push(`/main?month=${currentYear}-${monthStr}`)
+    startTransition(() => {
+      router.push(`/main?month=${currentYear}-${monthStr}`)
+    })
     setShowMonthPicker(false)
   }
 
@@ -223,22 +231,25 @@ export default function MainClient({ expenses, totalAmount, groupedExpenses, cat
       </div>
 
       {/* 지출 목록 */}
-      <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-4 space-y-6">
-        {(!expenses || expenses.length === 0) ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center space-y-4">
-              <div className="text-6xl">💰</div>
-              <h2 className="text-xl font-semibold text-gray-700">
-                이번 달 지출 내역이 없어요
-              </h2>
-              <p className="text-gray-500">
-                첫 지출을 기록해보세요!
-              </p>
+      {isPending ? (
+        <ExpenseListSkeleton />
+      ) : (
+        <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-4 space-y-6">
+          {(!expenses || expenses.length === 0) ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-center space-y-4">
+                <div className="text-6xl">💰</div>
+                <h2 className="text-xl font-semibold text-gray-700">
+                  이번 달 지출 내역이 없어요
+                </h2>
+                <p className="text-gray-500">
+                  첫 지출을 기록해보세요!
+                </p>
+              </div>
             </div>
-          </div>
-        ) : (
-          <>
-            {Object.entries(groupedExpenses).map(([date, { expenses, total }]) => (
+          ) : (
+            <>
+              {Object.entries(groupedExpenses).map(([date, { expenses, total }]) => (
           <div key={date} className="space-y-2">
             {/* 날짜 헤더 */}
             <div className="flex items-center justify-between px-1">
@@ -293,9 +304,10 @@ export default function MainClient({ expenses, totalAmount, groupedExpenses, cat
             </Card>
           </div>
         ))}
-          </>
-        )}
-      </div>
+            </>
+          )}
+        </div>
+      )}
 
       {/* 플로팅 버튼 */}
       <Link href="/add" className="fixed bottom-6 right-6">
