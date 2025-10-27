@@ -9,6 +9,7 @@ type Expense = {
   spent_at: string
   category: {
     name: string
+    emoji: string | null
   }
   spent_by_user: {
     email: string

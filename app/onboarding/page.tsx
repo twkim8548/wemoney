@@ -30,7 +30,7 @@ export default function OnboardingPage() {
 
             const { error: workspaceError } = await supabase.rpc(
                 'create_workspace_with_defaults',
-                { user_id: user.id }
+                { user_id: user.id } as any
             )
 
             if (workspaceError) throw workspaceError

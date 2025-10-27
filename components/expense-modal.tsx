@@ -125,7 +125,7 @@ export default function ExpenseModal({
     try {
       const supabase = createClient()
       
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('expenses')
         .update({
           amount: parseInt(formData.amount),

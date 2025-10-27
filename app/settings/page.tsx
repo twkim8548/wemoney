@@ -76,7 +76,7 @@ export default function SettingsPage() {
 
     if (!user) return
 
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('workspace_members')
       .update({ display_name: displayName.trim() })
       .eq('user_id', user.id)
