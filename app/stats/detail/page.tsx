@@ -80,7 +80,21 @@ export default async function StatsDetailPage({ searchParams }: Props) {
     query = query.eq('spent_by', userId)
   }
 
-  const { data: expenses } = await query as {
+  // 지출 데이터와 멤버/카테고리 정보를 병렬로 가져오기
+  const [expensesResult, membersResult, categoriesResult] = await Promise.all([
+    query,
+    supabase
+      .from('workspace_members')
+      .select('user_id, display_name')
+      .eq('workspace_id', member.workspace_id),
+    supabase
+      .from('categories')
+      .select('id, name')
+      .eq('workspace_id', member.workspace_id)
+      .order('name')
+  ])
+
+  const { data: expenses } = expensesResult as {
     data: Array<{
       id: string
       amount: number
@@ -94,24 +108,13 @@ export default async function StatsDetailPage({ searchParams }: Props) {
       } | null
     }> | null
   }
-
-  // 멤버 정보 가져오기
-  const { data: members } = await supabase
-    .from('workspace_members')
-    .select('user_id, display_name')
-    .eq('workspace_id', member.workspace_id) as {
+  const { data: members } = membersResult as {
     data: Array<{
       user_id: string
       display_name: string | null
     }> | null
   }
-
-  // 카테고리 정보 가져오기
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('id, name')
-    .eq('workspace_id', member.workspace_id)
-    .order('name') as {
+  const { data: categories } = categoriesResult as {
     data: Array<{
       id: string
       name: string

@@ -29,12 +29,10 @@ type GroupedExpenses = {
 
 async function getAppData(selectedMonth: string) {
   const supabase = await createClient()
-  
+
   const {
     data: { user },
   } = await supabase.auth.getUser()
-
-  console.log('User:', user?.id)
 
   if (!user) return null
 
@@ -45,8 +43,6 @@ async function getAppData(selectedMonth: string) {
     .eq('user_id', user.id)
     .single() as { data: { workspace_id: string } | null }
 
-  console.log('Member workspace_id:', member?.workspace_id)
-
   if (!member) return null
 
   // 해당 월의 시작일과 종료일 계산
@@ -56,40 +52,44 @@ async function getAppData(selectedMonth: string) {
   endDate.setDate(0) // 전월 마지막 날
   const endDateStr = endDate.toISOString().split('T')[0]
 
-  // 지출 목록 가져오기 (선택한 월)
-  const { data: expenses, error } = await supabase
-    .from('expenses')
-    .select(`
-      id,
-      amount,
-      memo,
-      spent_at,
-      spent_by,
-      recorded_by,
-      category_id,
-      categories!category_id(name, emoji)
-    `)
-    .eq('workspace_id', member.workspace_id)
-    .gte('spent_at', startDate)
-    .lte('spent_at', endDateStr)
-    .order('spent_at', { ascending: false })
-    .order('created_at', { ascending: false }) as { data: any[] | null; error: any }
+  // 모든 쿼리를 병렬로 실행
+  const [expensesResult, categoriesResult, membersResult] = await Promise.all([
+    // 지출 목록 가져오기 (선택한 월)
+    supabase
+      .from('expenses')
+      .select(`
+        id,
+        amount,
+        memo,
+        spent_at,
+        spent_by,
+        recorded_by,
+        category_id,
+        categories!category_id(name, emoji)
+      `)
+      .eq('workspace_id', member.workspace_id)
+      .gte('spent_at', startDate)
+      .lte('spent_at', endDateStr)
+      .order('spent_at', { ascending: false })
+      .order('created_at', { ascending: false }),
 
-  // 카테고리 목록 가져오기
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('id, name')
-    .eq('workspace_id', member.workspace_id)
-    .order('name') as { data: { id: string; name: string }[] | null }
+    // 카테고리 목록 가져오기
+    supabase
+      .from('categories')
+      .select('id, name')
+      .eq('workspace_id', member.workspace_id)
+      .order('name'),
 
-  // 멤버 목록 가져오기 (이름 포함)
-  const { data: members } = await supabase
-    .from('workspace_members')
-    .select('user_id, display_name')
-    .eq('workspace_id', member.workspace_id) as { data: { user_id: string; display_name: string | null }[] | null }
+    // 멤버 목록 가져오기 (이름 포함)
+    supabase
+      .from('workspace_members')
+      .select('user_id, display_name')
+      .eq('workspace_id', member.workspace_id)
+  ])
 
-  console.log('Expenses count:', expenses?.length)
-  console.log('Expenses error:', error)
+  const { data: expenses, error } = expensesResult as { data: any[] | null; error: any }
+  const { data: categories } = categoriesResult as { data: { id: string; name: string }[] | null }
+  const { data: members } = membersResult as { data: { user_id: string; display_name: string | null }[] | null }
 
   if (!expenses) return null
 
