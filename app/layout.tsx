@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import PWARegister from "@/components/pwa-register";
+import AppleSplashScreens from "@/components/apple-splash-screens";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,7 +19,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: '#4AA3BC',
+  themeColor: '#ffffff',
 };
 
 export const metadata: Metadata = {
@@ -52,6 +53,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <PWARegister />
+        <AppleSplashScreens />
         {children}
       </body>
     </html>
